@@ -1,4 +1,4 @@
-=from selenium import webdriver
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,10 +18,10 @@ def run():
     secim = str(st.selectbox("Bir havalimanı seçin:", h.air.airport))
     secilen_air = h.air[h.air['airport'] == secim]['airport'].values[0]
     secilen_code = h.air[h.air['airport'] == secim]['code'].values[0]
+    
     # Tarih seçimi
     selected_date = st.date_input("Tarih Seçin", value=pd.Timestamp('today'))
     formatted_date = selected_date.strftime("%d-%m-%Y").replace('-', '.')
-    
     
     # URL oluşturma
     url = f'https://www.enuygun.com/ucak-bileti/arama/{secilen_air}-ecn-ercan-intl-havalimani-{secilen_code}-ecn/?gidis={formatted_date}&yetiskin=1&sinif=ekonomi&save=1&geotrip=international&trip=international&ref=ft-homepage'
@@ -32,11 +32,8 @@ def run():
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
 
-
-
-
     service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service = service, options=options)
+    driver = webdriver.Chrome(service=service, options=options)
     driver.get(url)
     
     try:
@@ -76,11 +73,10 @@ def run():
         styled_df = df.style.apply(highlight_first_row, axis=1)
         st.dataframe(styled_df)
     
-    
     except TimeoutException:
         st.markdown(
-        "<h4 style='color: red;'>Üzgünüz, bu tarih için uçuş yok ya da tüm uçuşlar dolu!</h4>",
-        unsafe_allow_html=True
-    )
+            "<h4 style='color: red;'>Üzgünüz, bu tarih için uçuş yok ya da tüm uçuşlar dolu!</h4>",
+            unsafe_allow_html=True
+        )
     finally:
         driver.quit()
